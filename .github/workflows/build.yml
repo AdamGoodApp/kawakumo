@@ -1,0 +1,97 @@
+name: Build Extensions
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-chrome-firefox:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Typecheck
+        run: pnpm compile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build and zip for Chrome
+        run: pnpm zip
+
+      - name: Build and zip for Firefox
+        run: pnpm zip:firefox
+
+      - name: Upload Chrome extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: chrome-extension
+          path: .output/*-chrome.zip
+
+      - name: Upload Firefox extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: firefox-extension
+          path: .output/*-firefox.zip
+
+  build-safari:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build for Safari
+        run: pnpm build:safari
+
+      - name: Convert to Safari extension Xcode project
+        run: |
+          xcrun safari-web-extension-converter .output/safari-mv2 \
+            --project-location .output/safari-xcode \
+            --app-name "Kawakumo" \
+            --bundle-identifier com.kawakumo.extension \
+            --no-open \
+            --no-prompt \
+            --force
+
+      - name: Build Safari app with Xcode
+        run: |
+          xcodebuild \
+            -project ".output/safari-xcode/Kawakumo/Kawakumo.xcodeproj" \
+            -scheme "Kawakumo (macOS)" \
+            -configuration Release \
+            -derivedDataPath .output/safari-build \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Package Safari extension
+        run: |
+          cd .output/safari-build/Build/Products/Release
+          zip -r "$GITHUB_WORKSPACE/.output/kawakumo-safari.zip" "Kawakumo.app"
+
+      - name: Upload Safari extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-extension
+          path: .output/kawakumo-safari.zip
