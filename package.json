@@ -1,8 +1,8 @@
 {
-	"name": "wxt-react-starter",
+	"name": "kawakumo",
 	"description": "manifest.json description",
 	"private": true,
-	"version": "1.0.1",
+	"version": "1.0.0",
 	"type": "module",
 	"packageManager": "pnpm@10.24.0",
 	"scripts": {
