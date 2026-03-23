@@ -1,6 +1,6 @@
 {
 	"name": "kawakumo",
-	"description": "manifest.json description",
+	"description": "Streaming on demand",
 	"private": true,
 	"version": "1.0.0",
 	"type": "module",
