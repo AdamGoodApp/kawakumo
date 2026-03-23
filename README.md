@@ -28,5 +28,7 @@ Download the latest release for your browser from [GitHub Releases](https://gith
 
 1. Download `kawakumo-safari.zip` from the latest release
 2. Unzip the file
-3. Move **Kawakumo.app** to your **Applications** folder and open it
-4. In Safari, go to **Safari > Settings > Extensions** and enable Kawakumo
+3. Move **Kawakumo.app** to your **Applications** folder
+4. Open the app and click **Quit and Open Safari Extension Preferences**
+5. Enable the Kawakumo extension
+6. Make sure the extension has permission to edit websites
